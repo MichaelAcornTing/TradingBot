@@ -8,7 +8,7 @@ class MarketData:
         self.__HEADERS = {"APCA-API-KEY-ID": KEY, "APCA-API-SECRET-KEY": SECRET_KEY}
 
 
-    def get_current_price(self, ticker_symbol):
+    def __get_current_price(self, ticker_symbol):
         # get latest trade data
         url = f"{STOCK_PRICING_ENDPOINT}/stocks/{ticker_symbol}/trades/latest"
         trade_response = requests.get(url, headers=self.__HEADERS)
@@ -22,7 +22,7 @@ class MarketData:
             return trade_data['trade']['p']
         
 
-    def get_price_n_days_ago(self, ticker_symbol, n_days_ago):
+    def __get_price_n_days_ago(self, ticker_symbol, n_days_ago):
         # get trade data 2 days ago
         start_time = self.__get_date_n_days_ago(n_days_ago)
         parameters = {"start": start_time, "limit": 1}
@@ -50,8 +50,13 @@ class MarketData:
         return formatted_date
 
 
-    def get_percentage_score(self, current_price, previous_price):
-        percentageScore = ((current_price - previous_price) / previous_price) * 100
-        return round(percentageScore, 2)
+    # def get_percentage_score(self, current_price, previous_price):
+    #     percentageScore = ((current_price - previous_price) / previous_price) * 100
+    #     return round(percentageScore, 2)
 
+    def get_percentage_score(self, ticker_symbol, n_days_ago):
+        current_price = self.__get_current_price(ticker_symbol)
+        previous_price = self.__get_price_n_days_ago(ticker_symbol, n_days_ago)
+        percentage_score = ((current_price - previous_price) / previous_price) * 100
+        return round(percentage_score, 2)
 
